@@ -20,24 +20,6 @@ export const metadata: Metadata = {
   title: 'Fatereh Tondro — UI/UX Designer',
   description:
     'Portfolio of Fatereh Tondro, a UI/UX designer and accessibility research assistant designing usable interfaces for complex systems in healthcare, education, and XR.',
-  generator: 'v0.app',
-  icons: {
-    icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
-    ],
-    apple: '/apple-icon.png',
-  },
 }
 
 export const viewport: Viewport = {
