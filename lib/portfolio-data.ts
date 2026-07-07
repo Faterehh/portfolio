@@ -2,11 +2,11 @@ export const profile = {
   name: "Fatereh Tondro",
   title: "UI/UX Designer · Research Assistant · Exploring XR",
   tagline:
-    "I design and build usable interfaces for complex, multi-role systems in healthcare, education, and XR, combining user research, interaction design, and front-end development.",
+    "I bring extensive experience turning complex systems into simple, user-friendly interfaces, my background connects user research, interaction design, and front-end development, with a track record of solving tough workflow problems across diverse fields like healthcare, education, and immersive tech (VR/XR).",
   location: "Stockholm, Sweden",
   email: "fatereh.tondro@gmail.com",
   linkedin: "https://www.linkedin.com/in/fatereh-tondro/",
-  CV:"https://drive.google.com/file/d/1dQDH0LM2JUwvl9I5gREB85-HzHTLM3t1/view?usp=drivesdk",
+  CV:"/Fatereh_Tondro_CV.pdf",
   about: [
     "I'm a UI/UX designer with over four years of experience and a background in software engineering. I've worked as a front-end developer and as an accessibility research assistant, so I can research what users need, design the experience around it, and understand how it gets built. Most of my work is on complex, multi-role systems in healthcare and education, where the main goal is making them simpler to use.",
     "I focus on clarity, consistency, and reducing friction so users can complete tasks without getting lost. My accessibility research background shaped how I work: I design for the full range of users, not only the average case. More recently I have been applying the same approach to XR, with an emphasis on keeping immersive experiences easy to use.",

@@ -9,10 +9,10 @@ export function Hero() {
         <p className="mb-6 text-sm font-medium uppercase tracking-[0.2em] text-primary">
         {profile.location.split(",")[0]} based designer
       </p>
-      <h1 className="max-w-3xl text-balance text-4xl font-semibold leading-[1.1] tracking-tight md:text-6xl">
+      <h1 className="text-balanced max-w-3xl text-balance text-4xl font-semibold leading-[1.1] tracking-tight md:text-6xl">
         Hi, I&apos;m {profile.name.split(" ")[0]}.{" "}
         <span className="font-serif italic text-muted-foreground">
-          I make complex systems simple to use.
+         Turning chaos into simplicity.
         </span>
       </h1>
       <p className="mt-8 max-w-2xl text-pretty text-lg leading-relaxed text-muted-foreground">
