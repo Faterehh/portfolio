@@ -11,9 +11,9 @@ export function SiteFooter() {
           </h2>
           <div className="max-w-2xl">
             <p className="text-balance text-2xl font-semibold leading-snug tracking-tight md:text-3xl">
-              Have a project in mind, or just want to say hi?{" "}
+              Want to work with me?{" "}
               <span className="font-serif italic text-muted-foreground">
-                Let&apos;s talk.
+                Get in touch.
               </span>
             </p>
             <a
