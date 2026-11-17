@@ -64,6 +64,41 @@ export type Section =
       heading: string
       pairs: { challenge: string; solution: string }[]
     }
+  | {
+      kind: "callout"
+      heading: string
+      body?: string[]
+      points?: { label: string; text: string }[]
+    }
+  | {
+      kind: "decisions"
+      heading: string
+      intro?: string
+      items: { title: string; body: string[] }[]
+    }
+  | { kind: "blocks"; heading: string; blocks: Block[] }
+
+/** A screenshot with its intrinsic size, used by the rich "blocks" sections. */
+export type Shot = { src: string; alt: string; width: number; height: number }
+
+/** Caption rendered as a bold title followed by a sentence. */
+export type Caption = { title: string; text: string }
+
+export type Block =
+  /** Paragraph; `lead` renders bold before `text`. */
+  | { type: "p"; lead?: string; text?: string }
+  | { type: "bullets"; items: { lead?: string; text: string }[] }
+  /** Label/value pairs, e.g. the "In short" summary. */
+  | { type: "summary"; items: { label: string; text: string }[] }
+  | { type: "figure"; image: Shot; caption: Caption }
+  /** A desktop screenshot beside a phone screenshot, sharing one caption. */
+  | { type: "figurePair"; wide: Shot; narrow: Shot; caption: Caption }
+  /** Numbered grid of screenshots, each with a short label. */
+  | { type: "steps"; items: { label: string; image: Shot }[] }
+  | {
+      type: "linkCards"
+      items: { eyebrow: string; title: string; text: string; href: string; linkLabel: string }[]
+    }
 
 export type Accent = "amber" | "indigo" | "teal" | "emerald" | "sky" | "rose" | "cyan" | "blue"
 
@@ -71,11 +106,17 @@ export type Project = {
   slug: string
   name: string
   summary: string
+  /** Optional deck line shown under the title on the case study page. */
+  tagline?: string
   tags: string[]
   category: string
   accent: Accent
   icon: string
   image: string
+  /** Case study hero image; falls back to `image` (the home card cover) when absent. */
+  hero?: Shot
+  /** Slug of the project linked as "Next project"; defaults to the next one in the list. */
+  next?: string
   meta: { label: string; value: string }[]
   overview?: string[]
   sections: Section[]
@@ -87,152 +128,446 @@ export const projects: Project[] = [
     slug: "iqliniq",
     name: "IQLINIQ",
     summary:
-      "A clinic management system that streamlines treatment workflows, scheduling, reporting, and communication between patients, clinicians, and doctors.",
-    tags: ["Web App", "eHealth", "AI", "Dashboards"],
-    category: "Web App / eHealth",
+      "A clinic platform where staff build treatment plans and patients follow them, step by step.",
+    tags: ["Web App", "eHealth", "Responsive"],
+    category: "Web app / eHealth",
     accent: "teal",
     icon: "Stethoscope",
     image: "/projects/iqliniq.png",
+    hero: {
+      src: "/projects/iqliniq/hero.webp",
+      alt: "The IQLINIQ service builder, where staff set up a service, behind the patient’s step-by-step treatment plan.",
+      width: 2400,
+      height: 1350,
+    },
+    next: "medical-report-generator",
     meta: [
       { label: "Timeline", value: "4 months" },
-      { label: "My Role", value: "UI Designer & UX Researcher" },
-      { label: "Team", value: "3 designers working on different modules" },
-      { label: "Tools", value: "Figma · Minimals UI Design System · Miro · ClickUp · User Testing" },
-    ],
-    overview: [
-      "IQLINIQ is a clinic management system designed to streamline treatment workflows, scheduling, reporting, and communication between patients, clinicians, and doctors. The platform was originally built for AllBrains Clinic in Canada, then expanded into a scalable solution that can support any clinic with multi-step services.",
-      "I focused on structuring complex flows, reducing user friction, and designing a clean, component-based interface.",
+      {
+        label: "My role",
+        value: "UX/UI designer for the patient and admin sides, and parts of the clinician side",
+      },
+      {
+        label: "Team",
+        value: "Three designers, a project manager and developers, at Perfetto Gruppo (remote)",
+      },
+      { label: "Tools", value: "Figma · Minimals UI kit" },
     ],
     sections: [
       {
-        kind: "list",
-        heading: "Problem Space",
-        intro:
-          "Psychological clinics often rely on scattered tools for handling appointments, documents, progress tracking, and communication between patients, clinicians, and doctors. Key problems:",
-        items: [
-          "No flexible system for multi-step treatment workflows",
-          "Patient progress is tracked manually",
-          "Clinicians spend too much time on documentation",
-          "Patients struggle to understand treatment steps",
-          "Booking systems aren't designed for clinical complexity",
-        ],
-      },
-      {
-        kind: "paragraphs",
-        heading: "Research Approach",
-        body: [
-          "To understand real-world workflows and challenges, we used observational research inside the clinic, informal interviews with admins, clinicians, and doctors, analysis of existing workflows and documents, and comparative review of current market tools.",
-        ],
-      },
-      {
-        kind: "list",
-        heading: "Key Observation Insights",
-        intro: "Through direct observation, we noticed:",
-        items: [
-          "Patient progress was tracked with spreadsheets and manual notes",
-          "Appointments, tasks, and documents lived in separate tools",
-          "Long-term treatment programs were difficult to follow",
-          "Patients often missed forms or didn't know the next step",
-          "Clinicians had no structured way to deliver follow-up tasks",
-        ],
-      },
-      {
-        kind: "subgroups",
-        heading: "Staff Interviews",
-        groups: [
+        kind: "blocks",
+        heading: "In short",
+        blocks: [
           {
-            label: "Admins wanted",
+            type: "summary",
             items: [
-              "A clear overview of client progress",
-              "Easier task and service management",
-              "Improved visibility over treatment steps",
-            ],
-          },
-          {
-            label: "Clinicians needed",
-            items: [
-              "Faster, more consistent documentation",
-              "A structured way to deliver therapy steps",
-              "Easy access to client history and tasks",
-            ],
-          },
-          {
-            label: "Doctors required",
-            items: [
-              "A clean schedule view",
-              "Tools to write session notes efficiently",
-              "Better access to service and appointment details",
+              {
+                label: "Problem",
+                text: "A psychology clinic ran multi-step assessments across spreadsheets and separate tools.",
+              },
+              {
+                label: "Outcome",
+                text: "IQLINIQ now powers a live online second-opinion service, with eight services and 16 specialists.",
+              },
             ],
           },
         ],
       },
       {
-        kind: "list",
-        heading: "Competitive Analysis",
-        intro: "We analyzed Jane App, SimplePractice, TheraNest, Mend Telehealth, and Calendly. Findings:",
-        items: [
-          "Existing tools are good at booking or documentation, rarely both",
-          "None offer a dynamic workflow builder suitable for psychological treatments",
-          "UI patterns are often heavy and overwhelming",
-        ],
-      },
-      {
-        kind: "subgroups",
-        heading: "Design System",
-        intro:
-          "We built IQLINIQ using the Minimals UI Design System, a lightweight system known for its clarity and simplicity. Its clean structure made it ideal for a complex, content-heavy platform.",
-        groups: [
+        kind: "blocks",
+        heading: "About the project",
+        blocks: [
           {
-            label: "Benefits",
-            items: [
-              "Predictable interactions",
-              "Accessible typography and spacing",
-              "Clean, distraction-free layouts",
-              "Consistent components across all roles",
-            ],
+            type: "p",
+            text: "IQLINIQ is a cloud-based system that runs a clinic’s daily work, from booking to session reports. It has four kinds of users:",
           },
           {
-            label: "Custom Extensions",
+            type: "bullets",
             items: [
-              "Modular service blocks",
-              "Appointment cards",
-              "Progress indicators",
-              "Report and note elements",
-              "Task management components",
+              {
+                lead: "Patients and families",
+                text: "book appointments (type, time, interpreter and language), follow a treatment plan of appointments, payments, forms and documents, and message the clinic. One family account can hold several patients.",
+              },
+              {
+                lead: "Clinic staff and admins",
+                text: "manage patients, appointments, forms and documents, and build the step-by-step plans patients follow.",
+              },
+              {
+                lead: "Clinicians",
+                text: "work from a to-do list, write reports with the AI report generator, and leave internal comments for colleagues.",
+              },
+              {
+                lead: "Superusers",
+                text: "decide what each staff member can see and do.",
+              },
             ],
           },
         ],
       },
       {
-        kind: "challenges",
-        heading: "Challenges & Solutions",
-        pairs: [
+        kind: "blocks",
+        heading: "Context and constraints",
+        blocks: [
           {
-            challenge: "Flows between patients, clinicians, and doctors were deeply intertwined.",
-            solution:
-              "We conducted multiple user tests and reorganized the information architecture to reduce complexity while keeping flexibility. Repeated iterations helped us refine details until the experience worked smoothly for everyone using it.",
+            type: "p",
+            text: "IQLINIQ began with one psychology clinic in Canada. An assessment there is a chain of steps: consent, payment, forms, documents, several sessions and a report. The clinic was tracking all of it in spreadsheets and separate tools.",
+          },
+          {
+            type: "p",
+            text: "Tools we looked at handled booking or documentation, rarely both, and none let a clinic build its own multi-step plans. We compared Jane App, SimplePractice, TheraNest, Mend and Calendly.",
+          },
+          {
+            type: "p",
+            text: "In our calls, doctors and clinicians asked for a clear way to deliver therapy step by step, quick access to each client’s history, a clean schedule and faster session notes. The clinic’s brief added what admins needed: an overview of each client’s progress and simpler ways to manage services.",
+          },
+          {
+            type: "p",
+            text: "I designed the patient side for desktop, tablet and mobile, and the admin side for desktop. On the clinician side, I designed the to-do list, the client’s plan, reports and internal comments. A project manager handled the client.",
+          },
+          { type: "p", lead: "Constraints:" },
+          {
+            type: "bullets",
+            items: [
+              { text: "Four months for the core platform." },
+              {
+                text: "The Minimals UI kit as our base, which we extended with our own components: step blocks, appointment cards, progress indicators and report elements.",
+              },
+              {
+                text: "Clinic staff aren’t technical, yet they had to set up services without a developer.",
+              },
+              { text: "Many bookings are made by a guardian for someone else, often a child." },
+            ],
           },
         ],
       },
       {
-        kind: "list",
-        heading: "Outcomes",
-        items: [
-          "Workflow became more structured and centralized",
-          "Patients experienced more clarity and fewer mistakes",
-          "Clinicians reduced reporting time with AI",
-          "Admins found it easier to track service steps and tasks",
-          "Communication between roles became more unified",
+        kind: "blocks",
+        heading: "Key screens",
+        blocks: [
+          {
+            type: "figure",
+            image: {
+              src: "/projects/iqliniq/service-builder.png",
+              alt: "Service builder: a list of steps on the left, and the selected Consent form step on the right with its title, expiry in days, details, a clinic-approval checkbox and two conditions.",
+              width: 1440,
+              height: 1027,
+            },
+            caption: {
+              title: "The service builder.",
+              text: "Where clinic staff turn a treatment into steps and rules. The + between steps adds one in place.",
+            },
+          },
+          {
+            type: "figurePair",
+            wide: {
+              src: "/projects/iqliniq/patient-plan-desktop.webp",
+              alt: "Patient’s plan for ASD Under 6 on desktop: six steps marked Done, Missed, Scheduled, Active and Locked, beside a card with the price, the amount paid and what is still owed.",
+              width: 1440,
+              height: 1158,
+            },
+            narrow: {
+              src: "/projects/iqliniq/patient-plan-mobile.webp",
+              alt: "The same plan on a phone: the summary card, then the first steps, marked Done and Missed.",
+              width: 360,
+              height: 1020,
+            },
+            caption: {
+              title: "The patient’s plan, on desktop and mobile.",
+              text: "What’s done, what needs action and what it costs. Each step’s state has its own colour, icon and label.",
+            },
+          },
+          {
+            type: "figure",
+            image: {
+              src: "/projects/iqliniq/clinician-to-do-list.webp",
+              alt: "Clinician to-do list for Monday 10 March 2025: three appointments with time, client and location type, and buttons to see the location, enter the meeting or open the AI report.",
+              width: 1920,
+              height: 539,
+            },
+            caption: {
+              title: "The clinician’s to-do list.",
+              text: "Today’s appointments and unfinished reports, each with a shortcut to the AI report.",
+            },
+          },
         ],
       },
       {
-        kind: "list",
-        heading: "Future Improvements",
-        items: [
-          "Making the service builder completely component-based",
-          "Enhancing analytics & tracking tools",
-          "Expanding AI capabilities",
-          "Introducing more clinic-level customization options",
+        kind: "blocks",
+        heading: "The service builder",
+        blocks: [
+          {
+            type: "p",
+            lead: "Problem.",
+            text: "Every service is a chain of steps, and some can’t start until another is done. Staff needed to set this up without a developer.",
+          },
+          {
+            type: "p",
+            lead: "What I designed.",
+            text: "A service is a list of steps, each one of eight types, such as appointment, form, payment or report. Steps can be dragged into order. Dragging is fiddly in a long list, though, so a “+” between steps inserts one exactly where it belongs.",
+          },
+          {
+            type: "p",
+            lead: "Rules as sentences.",
+            text: "Each rule reads as a sentence with blanks: “This step is locked until the status in step [Payment] is [Done].” Staff can check it at a glance, and fixed patterns leave fewer ways to get a rule wrong.",
+          },
+          {
+            type: "p",
+            lead: "A safety net.",
+            text: "A wrong lock would block real patients. So services save as drafts, staff preview exactly what the patient will see before publishing, and a step can be hidden to pause it without deleting it.",
+          },
+          {
+            type: "steps",
+            items: [
+              {
+                label: "Preview before publishing",
+                image: {
+                  src: "/projects/iqliniq/builder-preview.webp",
+                  alt: "Preview of the ASD Under 6 service as a patient will see it, with Publish, Save Draft and Remove buttons above it.",
+                  width: 1440,
+                  height: 1027,
+                },
+              },
+              {
+                label: "A hidden step",
+                image: {
+                  src: "/projects/iqliniq/builder-hidden-step.webp",
+                  alt: "A Video recording consent step with a yellow banner: this step is hidden, and clients can’t see it.",
+                  width: 1440,
+                  height: 1027,
+                },
+              },
+              {
+                label: "Unsaved changes",
+                image: {
+                  src: "/projects/iqliniq/builder-unsaved-changes.webp",
+                  alt: "Dialog: you have unsaved changes, and leaving this step will discard your progress. Buttons: Leave Without Saving, and Save & Continue.",
+                  width: 1440,
+                  height: 1027,
+                },
+              },
+            ],
+          },
+        ],
+      },
+      {
+        kind: "blocks",
+        heading: "Booking for the family",
+        blocks: [
+          {
+            type: "p",
+            lead: "Problem.",
+            text: "One person is often the guardian for several patients, such as a parent with more than one child at the clinic. The clinic also serves many languages, and an interpreter costs extra.",
+          },
+          {
+            type: "p",
+            lead: "Options.",
+            text: "We considered a separate account for each person, and a separate request for interpreters.",
+          },
+          {
+            type: "p",
+            lead: "What we chose.",
+            text: "One four-step booking flow, run by the guardian, because young children can’t manage their own account. They first choose who the service is for, or register someone new with a referral code. The interpreter is an optional field, and a summary card beside every step updates the total straight away ($200 + $60 = $260), so families see the full cost before they pay.",
+          },
+          {
+            type: "p",
+            lead: "Payment and status.",
+            text: "The clinic set the payment rules; I designed how they show. Cash and cheque only work for in-person visits, so for online visits they’re greyed out, with a line saying why. Each person’s appointments then appear on their own page, and every card shows its status and the next step. For example, “Clinic approval needed” keeps Enter Meeting disabled until the e-transfer is approved.",
+          },
+          {
+            type: "steps",
+            items: [
+              {
+                label: "Who it’s for",
+                image: {
+                  src: "/projects/iqliniq/booking-1-who-its-for.webp",
+                  alt: "Booking step 1: choose Liam Durham or Emma Durham, or add a new client, and pick an optional interpreter language.",
+                  width: 1138,
+                  height: 567,
+                },
+              },
+              {
+                label: "Interpreter and price",
+                image: {
+                  src: "/projects/iqliniq/booking-2-confirm-and-price.webp",
+                  alt: "Confirm step: Liam’s details with Persian as the interpreter language, and a summary card showing $200 plus $60 for the interpreter, $260 in total.",
+                  width: 1138,
+                  height: 629,
+                },
+              },
+              {
+                label: "Payment",
+                image: {
+                  src: "/projects/iqliniq/booking-3-payment.webp",
+                  alt: "Payment step: a total of $260 with credit card selected. Cash and cheque are greyed out because this visit is online.",
+                  width: 735,
+                  height: 796,
+                },
+              },
+              {
+                label: "After booking: My appointments",
+                image: {
+                  src: "/projects/iqliniq/booking-4-my-appointments.webp",
+                  alt: "My appointments: one card waits for clinic approval with Enter Meeting disabled, one was declined by the clinic and offers Complete Payment, and one is paid with Enter Meeting active.",
+                  width: 1144,
+                  height: 513,
+                },
+              },
+            ],
+          },
+          {
+            type: "p",
+            lead: "Result.",
+            text: "Booking an appointment inside a service is part of the live product today.",
+          },
+        ],
+      },
+      {
+        kind: "blocks",
+        heading: "Finding the right care",
+        blocks: [
+          {
+            type: "p",
+            lead: "Problem.",
+            text: "Patients start in different places. Some arrive with a referral for a service or a doctor; others only know what the problem is.",
+          },
+          {
+            type: "p",
+            lead: "What I designed.",
+            text: "Three ways in: Services, Doctors and Specialties. Each doctor has a profile with their services and reviews. Patients then choose a service and how to meet: online by Zoom, in person or by phone. That choice comes before the calendar, because not every doctor offers every type, and it shapes what follows, such as payment options and the address or Zoom link.",
+          },
+          {
+            type: "p",
+            lead: "Picking a time with Calendly.",
+            text: "A scheduler of our own would have needed its own research, so we used Calendly, which patients may already know, and planned our own for later. I designed the route around it. The doctors page explains that patients will go to the doctor’s calendar and can come back if the times don’t suit them. At the Select Appointment step of booking the calendar opens, and after choosing a time, patients return to IQLINIQ to pay.",
+          },
+          {
+            type: "p",
+            lead: "No dead ends.",
+            text: "If a doctor isn’t available, the profile says so and the Book button is disabled. If the hand-back to payment fails, patients can try again or contact the clinic.",
+          },
+          {
+            type: "steps",
+            items: [
+              {
+                label: "Specialties",
+                image: {
+                  src: "/projects/iqliniq/care-1-specialties.webp",
+                  alt: "Specialties tab: cards for Personality Disorder, Coaching, Couple Therapy, Behavioral Therapy and ASD, each with a See Details link.",
+                  width: 1440,
+                  height: 569,
+                },
+              },
+              {
+                label: "Doctors, with a note about the calendar",
+                image: {
+                  src: "/projects/iqliniq/care-2-doctors.webp",
+                  alt: "Available doctors for a specialty, with a note that patients will go to the doctor’s calendar and can come back if the times don’t suit them.",
+                  width: 1440,
+                  height: 834,
+                },
+              },
+              {
+                label: "How to meet",
+                image: {
+                  src: "/projects/iqliniq/care-3-how-to-meet.webp",
+                  alt: "Appointment type: online by Zoom, in person at the main clinic, or by phone.",
+                  width: 598,
+                  height: 415,
+                },
+              },
+              {
+                label: "Back to IQLINIQ to pay",
+                image: {
+                  src: "/projects/iqliniq/care-5-back-to-pay.webp",
+                  alt: "Redirecting to complete payment, with Contact Us and Try Again buttons in case it stalls.",
+                  width: 864,
+                  height: 396,
+                },
+              },
+            ],
+          },
+        ],
+      },
+      {
+        kind: "blocks",
+        heading: "How I worked",
+        blocks: [
+          {
+            type: "bullets",
+            items: [
+              {
+                lead: "Research.",
+                text: "We spoke with three doctors and clinicians at the clinic. A teammate led the calls, and I joined them.",
+              },
+              {
+                lead: "Testing.",
+                text: "We didn’t run usability tests. The clinic tried a build with sample data and reported problems, which we fixed. Designers and developers also reviewed each other’s work.",
+              },
+              {
+                lead: "With developers.",
+                text: "I handed off in Figma with specs, met the developers regularly, and checked their builds against my designs.",
+              },
+              {
+                lead: "Accessibility.",
+                text: "We relied on the Minimals kit’s defaults, as accessibility testing wasn’t in scope this time.",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        kind: "blocks",
+        heading: "Outcome and reflection",
+        blocks: [
+          {
+            type: "p",
+            text: "IQLINIQ grew from a tool for one clinic into a platform others run under their own brand. Today it powers an online second-opinion service. Patients choose from eight services, from psychiatry to paediatrics, book a specialist and receive a written report. The service lists 16 specialists in two countries.",
+          },
+          {
+            type: "p",
+            text: "Its patient pages still use the service page and step-by-step plan I designed for the first clinic. I don’t have usage figures.",
+          },
+          { type: "p", text: "Two things I’d do differently:" },
+          {
+            type: "bullets",
+            items: [
+              {
+                text: "Keep the predefined step types as templates, and let admins create new ones from the start.",
+              },
+              {
+                text: "Check accessibility myself, with tools and WCAG, instead of trusting the UI kit.",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        kind: "blocks",
+        heading: "Connected modules",
+        blocks: [
+          {
+            type: "p",
+            text: "IQLINIQ has two AI modules. Each works inside the platform and on its own, and each has its own case study.",
+          },
+          {
+            type: "linkCards",
+            items: [
+              {
+                eyebrow: "For clinicians",
+                title: "AI Report Generator",
+                text: "Clinicians record or upload a session, then review and approve the report it drafts. It opens from the to-do list and appointments, and also works as a separate tool.",
+                href: "/work/medical-report-generator",
+                linkLabel: "Read the case study",
+              },
+              {
+                eyebrow: "For patients",
+                title: "AI Health Assistant",
+                text: "Helps patients describe their symptoms before a visit, through visual, step-by-step questions. It works inside IQLINIQ or on its own.",
+                href: "/work/ai-health-assistant",
+                linkLabel: "Read the case study",
+              },
+            ],
+          },
         ],
       },
     ],
@@ -636,7 +971,7 @@ export const projects: Project[] = [
   },
   {
     slug: "medical-report-generator",
-    name: "Medical Report Generator",
+    name: "AI Report Generator",
     summary:
       "An intelligent module that assists clinicians by automatically creating structured reports from anonymized patient interactions.",
     tags: ["Web App", "Healthcare", "AI"],

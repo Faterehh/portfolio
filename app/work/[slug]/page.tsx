@@ -37,7 +37,8 @@ export default async function ProjectPage({
   if (!project) notFound()
 
   const index = projects.findIndex((p) => p.slug === slug)
-  const next = projects[(index + 1) % projects.length]
+  const next =
+    (project.next && getProject(project.next)) || projects[(index + 1) % projects.length]
   const accent = accentMap[project.accent]
   const Icon = iconMap[project.icon]
 
@@ -66,7 +67,7 @@ export default async function ProjectPage({
             {project.name}
           </h1>
           <p className="mt-4 max-w-2xl text-pretty text-lg leading-relaxed text-muted-foreground">
-            {project.summary}
+            {project.tagline ?? project.summary}
           </p>
           <div className="mt-6 flex flex-wrap gap-2">
             {project.tags.map((tag) => (
@@ -79,16 +80,30 @@ export default async function ProjectPage({
             ))}
           </div>
 
-          <div className="relative mt-8 aspect-[16/9] overflow-hidden rounded-2xl border border-border bg-secondary">
-            <Image
-              src={project.image || "/placeholder.svg"}
-              alt={`${project.name} project cover`}
-              fill
-              sizes="(max-width: 1024px) 100vw, 1024px"
-              priority
-              className="object-cover"
-            />
-          </div>
+          {project.hero ? (
+            <div className="mt-8 overflow-hidden rounded-2xl border border-border bg-white">
+              <Image
+                src={project.hero.src}
+                alt={project.hero.alt}
+                width={project.hero.width}
+                height={project.hero.height}
+                sizes="(max-width: 1024px) 100vw, 1024px"
+                priority
+                className="block h-auto w-full"
+              />
+            </div>
+          ) : (
+            <div className="relative mt-8 aspect-[16/9] overflow-hidden rounded-2xl border border-border bg-secondary">
+              <Image
+                src={project.image || "/placeholder.svg"}
+                alt={`${project.name} project cover`}
+                fill
+                sizes="(max-width: 1024px) 100vw, 1024px"
+                priority
+                className="object-cover"
+              />
+            </div>
+          )}
         </header>
 
         <dl className="grid gap-x-8 gap-y-6 border-b border-border py-10 sm:grid-cols-2 lg:grid-cols-4">
